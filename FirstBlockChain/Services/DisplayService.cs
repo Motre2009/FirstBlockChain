@@ -19,7 +19,7 @@ public class DisplayService
             Console.WriteLine($"Nonce: {block.Nonce}");
             foreach (var transaction in block.Transactions)
             {
-                Console.WriteLine($"  - {transaction.ToRawString()}");
+                Console.WriteLine($"{transaction.ToRawString()}");
             }
             Console.WriteLine(new string('-', 50));
         }

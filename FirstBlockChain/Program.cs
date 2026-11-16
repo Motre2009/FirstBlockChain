@@ -10,12 +10,18 @@ internal class Program
         var blockChain = new BlockChain(2);
         var displayService = new DisplayService();
         var transactionService = new TransactionService();
+        var walletService = new WalletService();
+
+        var aliceWallet = walletService.CreateWallet("Alice");
+        var bobWallet = walletService.CreateWallet("Bob");
+        var charlieWallet = walletService.CreateWallet("Charlie");
+        var wallets = new List<Wallet> { aliceWallet, bobWallet, charlieWallet };
 
         var listOfTransactions = new List<Transaction>
         {
-            transactionService.CreateTransaction("Alice", "Bob", 10),
-            transactionService.CreateTransaction("Bob", "Charlie", 5),
-            transactionService.CreateTransaction("Charlie", "Dave", 2)
+            transactionService.CreateTransaction(aliceWallet, bobWallet.Address, 10),
+            transactionService.CreateTransaction(bobWallet, charlieWallet.Address, 5),
+            transactionService.CreateTransaction(charlieWallet, aliceWallet.Address, 2)
         };
 
         Console.WriteLine("------------MENU-------------");
@@ -32,12 +38,32 @@ internal class Program
             {
                 case "1":
                     Console.WriteLine("Enter sender:");
-                    var sender = Console.ReadLine();
+                    var senderName = Console.ReadLine();
+                    var sender = wallets.FirstOrDefault(w => w.Name == senderName);
+                    if (sender == null && !string.IsNullOrWhiteSpace(senderName))
+                    {
+                        sender = walletService.CreateWallet(senderName);
+                        wallets.Add(sender);
+                    }
                     Console.WriteLine("Enter receiver:");
-                    var receiver = Console.ReadLine();
+                    var receiverName = Console.ReadLine();
+                    var receiver = wallets.FirstOrDefault(w => w.Name == receiverName);
+                    if (receiver == null && !string.IsNullOrWhiteSpace(receiverName))
+                    {
+                        receiver = walletService.CreateWallet(receiverName);
+                        wallets.Add(receiver);
+                    }
+
                     Console.WriteLine("Enter amount:");
-                    var amount = decimal.Parse(Console.ReadLine());
-                    var transaction = transactionService.CreateTransaction(sender, receiver, amount);
+                    decimal.TryParse(Console.ReadLine(), out var amount);
+
+                    if (sender == null || receiver == null || amount <= 0)
+                    {
+                        Console.WriteLine("Wrong data. Transaction was not created.");
+                        break;
+                    }
+
+                    var transaction = transactionService.CreateTransaction(sender, receiver.Address, amount);
                     listOfTransactions.Add(transaction);
                     break;
                 case "2":
@@ -58,7 +84,7 @@ internal class Program
             Console.WriteLine("1. Create a new transaction");
             Console.WriteLine("2. Add new block");
             Console.WriteLine("3. Display the blockchain");
-            Console.WriteLine("4. Is valid the block?");
+            Console.WriteLine("4. Is the blockchain valid?");
             Console.WriteLine("5. Exit");
             enter = Console.ReadLine();
         }

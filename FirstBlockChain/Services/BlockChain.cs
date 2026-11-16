@@ -47,7 +47,7 @@ public class BlockChain
         var newBlock = new Block
         {
             Index = previousBlock.Index + 1,
-            Transactions = transactions,
+            Transactions = new List<Transaction>(transactions),
             PreviousHash = previousBlock.Hash,
             Timestamp = DateTime.UtcNow
         };

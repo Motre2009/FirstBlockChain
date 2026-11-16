@@ -27,3 +27,4 @@ C:\Users\admin\Projects C#\FirstBlockChain\FirstBlockChain\obj\Debug\net8.0\refi
 C:\Users\admin\Projects C#\FirstBlockChain\FirstBlockChain\obj\Debug\net8.0\FirstBlockChain.pdb
 C:\Users\admin\Projects C#\FirstBlockChain\FirstBlockChain\obj\Debug\net8.0\FirstBlockChain.genruntimeconfig.cache
 C:\Users\admin\Projects C#\FirstBlockChain\FirstBlockChain\obj\Debug\net8.0\ref\FirstBlockChain.dll
+C:\Users\admin\Projects C#\FirstBlockChain\FirstBlockChain\obj\Debug\net8.0\FirstBlockChain.sourcelink.json

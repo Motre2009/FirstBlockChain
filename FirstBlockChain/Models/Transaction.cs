@@ -12,6 +12,8 @@ public class Transaction
     public string From { get; set; }
     public string To { get; set; }
     public decimal Amount { get; set; }
+    public byte[] SenderPublicKey { get; set; }
+    public byte[] Signature { get; set; }
     public DateTime TimeStamp { get; set; }
 
     public Transaction(string from, string to, decimal amount)
@@ -23,13 +25,14 @@ public class Transaction
         TimeStamp = DateTime.UtcNow;
     }
 
-    public string ToRawString()
+    public byte[] GetDataToSign()
     {
-        return $"{Id}{From}{To}{Amount}{TimeStamp}";
+        var data = $"{Id}{From}{To}{Amount}{TimeStamp}";
+        return Encoding.UTF8.GetBytes(data);
     }
 
-    public override string ToString()
+    public string ToRawString()
     {
-        return $"Transaction ID: {Id}, From: {From}, To: {To}, Amount: {Amount}, TimeStamp: {TimeStamp}";
+        return $"Transation Id: {Id} -  From: {From} ->  To: {To}: Amount: {Amount} ({TimeStamp})";
     }
 }
