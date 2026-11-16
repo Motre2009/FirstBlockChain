@@ -41,7 +41,7 @@ public class BlockChain
         Chain.Add(genesisBlock);
     }
 
-    public void CreateTransaction(List<Transaction> transactions) 
+    public void AddBlock(List<Transaction> transactions) 
     { 
         var previousBlock = Chain[Chain.Count - 1];
         var newBlock = new Block

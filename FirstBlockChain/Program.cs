@@ -67,7 +67,7 @@ internal class Program
                     listOfTransactions.Add(transaction);
                     break;
                 case "2":
-                    blockChain.CreateTransaction(listOfTransactions);
+                    blockChain.AddBlock(listOfTransactions);
                     listOfTransactions.Clear();
                     break;
                 case "3":
