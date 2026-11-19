@@ -17,6 +17,11 @@ internal class Program
         var charlieWallet = walletService.CreateWallet("Charlie");
         var wallets = new List<Wallet> { aliceWallet, bobWallet, charlieWallet };
 
+        foreach (var wallet in wallets)
+        {
+            blockChain.AddBlock(new List<Transaction>(), wallet.Address);
+        }
+
         var listOfTransactions = new List<Transaction>
         {
             transactionService.CreateTransaction(aliceWallet, bobWallet.Address, 10),
@@ -29,10 +34,11 @@ internal class Program
         Console.WriteLine("2. Add new block");
         Console.WriteLine("3. Display the blockchain");
         Console.WriteLine("4. Is the blockchain valid?");
-        Console.WriteLine("5. Exit");
+        Console.WriteLine("5. Check balance");
+        Console.WriteLine("6. Exit");
         var enter = Console.ReadLine();
 
-        while (enter != "5")
+        while (enter != "6")
         {
             switch (enter)
             {
@@ -67,7 +73,24 @@ internal class Program
                     listOfTransactions.Add(transaction);
                     break;
                 case "2":
-                    blockChain.AddBlock(listOfTransactions);
+                    Console.WriteLine("Enter miner name:");
+                    var minerName = Console.ReadLine();
+                    var miner = wallets.FirstOrDefault(w => w.Name == minerName);
+
+                    if (miner == null)
+                    {
+                        Console.WriteLine("Miner not found.");
+                        break;
+                    }
+
+                    try
+                    {
+                        blockChain.AddBlock(listOfTransactions, miner.Address);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Console.WriteLine($"Block not added: {ex.Message}");
+                    }
                     listOfTransactions.Clear();
                     break;
                 case "3":
@@ -75,6 +98,21 @@ internal class Program
                     break;
                 case "4":
                     Console.WriteLine($"Is valid: {blockChain.IsChainValid()}");
+                    break;
+                case "5":
+                    Console.WriteLine("Enter wallet name to check balance:");
+                    var walletName = Console.ReadLine();
+                    var wallet = wallets.FirstOrDefault(w => w.Name == walletName);
+                    if (wallet != null)
+                    {
+                        var balanceService = new BalanceService();
+                        var balance = balanceService.GetBalance(wallet.Address, blockChain.Chain);
+                        Console.WriteLine($"Balance of {wallet.Name}: {balance}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wallet not found.");
+                    }
                     break;
                 default:
                     Console.WriteLine("Invalid option. Please try again.");
@@ -85,7 +123,8 @@ internal class Program
             Console.WriteLine("2. Add new block");
             Console.WriteLine("3. Display the blockchain");
             Console.WriteLine("4. Is the blockchain valid?");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Check balance");
+            Console.WriteLine("6. Exit");
             enter = Console.ReadLine();
         }
     }

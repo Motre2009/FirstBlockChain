@@ -13,6 +13,7 @@ public class BlockChain
     public readonly HashingService _hashingService;
     private readonly MiningService _miningService;
     private readonly TransactionService _transactionService;
+    private readonly BalanceService _balanceService;
     public int Difficulty { get; set; }
     public readonly double _targetBlockTime = 5;
     public readonly int _adjustmentInterval = 5;
@@ -21,9 +22,10 @@ public class BlockChain
     {
         _miningService = new MiningService();
         _hashingService = new HashingService();
+        _transactionService = new TransactionService();
+        _balanceService = new BalanceService();
         Chain = new List<Block>();
         Difficulty = difficulty;
-        _transactionService = new TransactionService();
         CreateGenesisBlock();
     }
 
@@ -41,13 +43,35 @@ public class BlockChain
         Chain.Add(genesisBlock);
     }
 
-    public void AddBlock(List<Transaction> transactions) 
-    { 
+    public void AddBlock(List<Transaction> transactions, string minerAddress) 
+    {
+        var blockTransactions = new List<Transaction>
+        {
+            Transaction.CreateCoinbaseTransaction(minerAddress, 50)
+        };
+
+        foreach (var tx in transactions) 
+        {
+            if (!_transactionService.ValidateTransaction(tx).isValid) 
+            {
+                Console.WriteLine($"Invalid transaction: {tx.ToString()}");
+                throw new ArgumentException("Invalid transaction detected. Block not added.");
+            }
+
+            if (!_balanceService.HasSufficientBalance(tx.From, tx.Amount, Chain, transactions)) 
+            {
+                Console.WriteLine($"Insufficient balance for transaction: {tx.ToString()}");
+                throw new ArgumentException("Insufficient balance for transaction. Block not added.");
+            }
+
+            blockTransactions.Add(tx);
+        }
+
         var previousBlock = Chain[Chain.Count - 1];
         var newBlock = new Block
         {
             Index = previousBlock.Index + 1,
-            Transactions = new List<Transaction>(transactions),
+            Transactions = blockTransactions,
             PreviousHash = previousBlock.Hash,
             Timestamp = DateTime.UtcNow
         };

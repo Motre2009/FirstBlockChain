@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using FirstBlockChain.Models;
@@ -30,6 +31,10 @@ public class TransactionService
 
     public (bool isValid, string errorMessage) ValidateTransaction(Transaction tx)
     {
+        if (tx.IsCoinbase)
+        {
+            return (true, string.Empty);
+        }
         if (string.IsNullOrEmpty(tx.From)) 
         {
             return (false, "Invalid sender address");

@@ -14,6 +14,7 @@ public class Transaction
     public decimal Amount { get; set; }
     public byte[] SenderPublicKey { get; set; }
     public byte[] Signature { get; set; }
+    public bool IsCoinbase { get; set; }
     public DateTime TimeStamp { get; set; }
 
     public Transaction(string from, string to, decimal amount)
@@ -23,6 +24,11 @@ public class Transaction
         To = to;
         Amount = amount;
         TimeStamp = DateTime.UtcNow;
+    }
+
+    public static Transaction CreateCoinbaseTransaction(string to, decimal amount)
+    {
+        return new Transaction("Coinbase", to, amount) { IsCoinbase = true };
     }
 
     public byte[] GetDataToSign()
