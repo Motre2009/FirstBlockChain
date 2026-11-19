@@ -11,6 +11,7 @@ internal class Program
         var displayService = new DisplayService();
         var transactionService = new TransactionService();
         var walletService = new WalletService();
+        var balanceService = new BalanceService();
 
         var aliceWallet = walletService.CreateWallet("Alice");
         var bobWallet = walletService.CreateWallet("Bob");
@@ -69,6 +70,12 @@ internal class Program
                         break;
                     }
 
+                    if (!balanceService.HasSufficientBalance(sender.Address, amount, blockChain.Chain, listOfTransactions))
+                    {
+                        Console.WriteLine("Insufficient balance. Transaction was not created.");
+                        break;
+                    }
+
                     var transaction = transactionService.CreateTransaction(sender, receiver.Address, amount);
                     listOfTransactions.Add(transaction);
                     break;
@@ -90,8 +97,8 @@ internal class Program
                     catch (ArgumentException ex)
                     {
                         Console.WriteLine($"Block not added: {ex.Message}");
+                        listOfTransactions.Clear();
                     }
-                    listOfTransactions.Clear();
                     break;
                 case "3":
                     displayService.DisplayBlockChain(blockChain);
@@ -105,7 +112,6 @@ internal class Program
                     var wallet = wallets.FirstOrDefault(w => w.Name == walletName);
                     if (wallet != null)
                     {
-                        var balanceService = new BalanceService();
                         var balance = balanceService.GetBalance(wallet.Address, blockChain.Chain);
                         Console.WriteLine($"Balance of {wallet.Name}: {balance}");
                     }

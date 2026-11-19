@@ -58,7 +58,7 @@ public class BlockChain
                 throw new ArgumentException("Invalid transaction detected. Block not added.");
             }
 
-            if (!_balanceService.HasSufficientBalance(tx.From, tx.Amount, Chain, transactions)) 
+            if (!_balanceService.HasSufficientBalance(tx.From, tx.Amount, Chain, blockTransactions)) 
             {
                 Console.WriteLine($"Insufficient balance for transaction: {tx.ToString()}");
                 throw new ArgumentException("Insufficient balance for transaction. Block not added.");
